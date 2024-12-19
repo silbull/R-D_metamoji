@@ -2,7 +2,7 @@ fastapi
 h5py
 imageai
 Jinja2
-numpy
+numpy < 2
 opencv-python
 python-dotenv
 pytest
