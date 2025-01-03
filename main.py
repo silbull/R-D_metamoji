@@ -1,13 +1,3 @@
-#!/usr/bin/env python
-#
-# [FILE] main.py
-#
-# [DESCRIPTION]
-#  YOLOを利用した物体検出向けのRESTメソッドを定義する
-#
-# [NOTES]
-#  YOLO V3を利用している
-#
 import base64
 import os
 import sys
@@ -28,13 +18,13 @@ load_dotenv()
 
 # ローカルフォルダー
 local_folder = os.environ.get("LOCAL_FOLDER")
-if local_folder == None:
+if local_folder is None:
     print("環境変数LOCAL_FOLDERが設定されていません")
     sys.exit()
 
 # YOLOモデルファイル
 yolo_model_file = os.environ.get("YOLO_MODEL_FILE")
-if yolo_model_file == None:
+if yolo_model_file is None:
     print("環境変数YOLO_MODEL_FILEが設定されていません")
     sys.exit()
 else:
@@ -44,24 +34,19 @@ app = FastAPI()
 app.mount(path="/static", app=StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-#
-# [FUNCTION] is_reload_enabled()
-#
-# [DESCRIPTION]
-#  実行するコマンドに--reloadが含まれるか判定する
-#
-# [INPUTS] None
-#
-# [OUTPUTS]
-#  True: 含まれる False: 含まれない
-#
-# [NOTES]
-#  Trueの場合はデバッグ実行とみなし、JSONデータをコンソール上に表示する
-#
-
 
 def is_reload_enabled():
+    """実行するコマンドに--reloadが含まれるか判定する
+
+    Note:
+        Trueの場合はデバッグ実行とみなし、JSONデータをコンソール上に表示する
+
+    Returns:
+        bool: True: 含まれる False: 含まれない
+    """
     return "--reload" in sys.argv
+
+
 #
 # HISTORY
 # [1] 2024-11-14 - Initial version
@@ -85,9 +70,19 @@ def is_reload_enabled():
 
 
 @app.get("/", response_class=HTMLResponse)
-async def topPage(request: Request):
+async def top_page(request: Request):
+    """トップページを開く
+
+    Args:
+        request (Request): リクエスト
+
+    Returns:
+        _type_: テンプレートレスポンスを返す
+    """
 
     return templates.TemplateResponse("top.html", {"request": request, "title": "YOLO REST Server"})
+
+
 #
 # HISTORY
 # [1] 2024-11-14 - Initial version
@@ -121,33 +116,40 @@ async def topPage(request: Request):
 
 
 @app.post("/rest/detect_objects")
-def postDetectObjects(json_data: dict):
+def post_detect_objects(json_data: dict):
+    """eYACHO/GEMBA Noteから送信されてきた画像情報をファイルに保存し、YOLOの物体検出を実行する
+
+    Args:
+        json_data (dict): クライアント（eYACHO/GEMBA Note）からの画像情報
+
+    Returns:
+        _type_: 物体が検出された領域（JSON形式）
+    """
     results = {}
     results["message"] = "不明なエラーが発生しました"
 
-    if ("inputImage" in json_data) == False:
+    if ("inputImage" in json_data) is False:
         results["message"] = "入力画像が設定されていません"
         return results
 
     # Base64文字列をバイナリファイルに保存
-    splitString = json_data["inputImage"].split(",")
-    img_binary = base64.b64decode(splitString[1])
+    split_string = json_data["inputImage"].split(",")
+    img_binary = base64.b64decode(split_string[1])
 
     # ファイル拡張子を取得
-    splitString = splitString[0].split("/")
-    extension = splitString[1].split(";")
+    split_string = split_string[0].split("/")
+    extension = split_string[1].split(";")
 
     # 保存する画像ファイル名を準備する
-    noteId = getNoteId(json_data["_noteLink"])
-    filename = noteId + "-" + \
-        str(time.strftime("%Y%m%d%H%M%S")) + "." + extension[0]
+    note_id = getNoteId(json_data["_noteLink"])
+    filename = note_id + "-" + str(time.strftime("%Y%m%d%H%M%S")) + "." + extension[0]
     file_path = local_folder + "/" + filename
 
     # 画像ファイルを保存
     try:
         with open(file_path, "wb") as f:
             f.write(img_binary)
-    except Exception as e:
+    except OSError as e:
         print(e)
         return results
 
@@ -159,7 +161,7 @@ def postDetectObjects(json_data: dict):
     detected = yoloDetectObjects(file_path, annotated_image, yolo_model_file)
 
     # 格納するキーはeYACHO/GEMBA NoteのノートIDとページIDから生成する
-    key = noteId + "-" + json_data["_pageId"]
+    key = note_id + "-" + json_data["_pageId"]
     if is_reload_enabled():
         print("[DETECTED]", detected)
         print("[REDIS KEY]", key)
@@ -170,14 +172,16 @@ def postDetectObjects(json_data: dict):
         return results
 
     # 生成した画像と認識結果を登録する
-    Status = redisImagePut(key, annotated_image, detected)
+    status = redisImagePut(key, annotated_image, detected)
     os.remove(annotated_image)
 
-    if Status == False:
+    if status is False:
         results["message"] = "検出結果がありません"
         return results
 
     return detected
+
+
 #
 # HISTORY
 # [1] 2024-11-14 - Initial version
@@ -220,6 +224,8 @@ def postDetectedBoxes(json_data: dict):
     results = redisBoxGet(key)
 
     return results
+
+
 #
 # HISTORY
 # [1] 2024-11-14 - Initial version
@@ -258,6 +264,8 @@ def postDetectedImage(json_data: dict):
     results = redisImageGet(key)
 
     return results
+
+
 #
 # HISTORY
 # [1] 2024-11-14 - Initial version
