@@ -1,14 +1,15 @@
 #!/usr/bin/env python
-# coding: utf-8
 #
 # [FILE] redis_util.py
 #
 # [DESCRIPTION]
 #  REDISに関わるメソッドを定義する
 #
-import os, sys
 import base64
 import json
+import os
+import sys
+
 import redis
 from dotenv import load_dotenv
 
@@ -17,19 +18,19 @@ load_dotenv()
 
 # REDISホスト名を取得
 redis_host = os.environ.get("REDIS_HOST")
-if redis_host == None:
+if redis_host is None:
     print("環境変数REDIS_HOSTが設定されていません")
     sys.exit()
 
 # REDISポート番号を取得
 redis_port = os.environ.get("REDIS_PORT")
-if redis_port == None:
+if redis_port is None:
     print("環境変数REDIS_PORTが設定されていません")
     sys.exit()
 
 # REDISキーの有効期限を取得
 redis_duration = os.environ.get("REDIS_EXPIRE")
-if redis_duration == None:
+if redis_duration is None:
     print("環境変数REDIS_EXPIREが設定されていません")
     redis_duration = 60
 else:
@@ -39,43 +40,37 @@ else:
 r_client = redis.Redis(host=redis_host, port=redis_port, db=0)
 print("Connected REDIS")
 
-#
-# [FUNCTION] redisBoxGet()
-#
-# [DESCRIPTION]
-#  検出された領域を取得する
-#
-# [INPUTS]
-#  key - REDISに格納されたキー
-#
-# [OUTPUTS] 
-#  物体が検出された領域（JSON形式）：
-#  {'keys': ['objName', 'probability', 'topX', 'topY', 'bottomX', 'bottomY'],
-#   'records': [
-#       {'objName':<Detected Name>, 
-#        'probability':<Percentage>, 
-#        'topX':234, 'topY':140, 'bottmX':249, 'bottomY':156}, 
-#       ...],
-#   'message': <コメント>}
-#
-# [NOTES]
-#
+
 def redisBoxGet(key):
+    """物体検出結果を取得する
+
+     Args:
+         key (_type_): REDISに格納されたキー
+
+     Returns:
+         _type_: 物体が検出された領域（JSON形式）
+
+          {'keys': ['objName', 'probability', 'topX', 'topY', 'bottomX', 'bottomY'],
+    'records': [
+        {'objName':<Detected Name>,
+         'probability':<Percentage>,
+         'topX':234, 'topY':140, 'bottmX':249, 'bottomY':156},
+        ...],
+    'message': <コメント>}
+    """
+
     init_val = {}
-    init_val['message'] = "検出結果がありません"
-    
+    init_val["message"] = "検出結果がありません"
+
     # REDISから画像を取得する
     json_string = r_client.hget(key, "boxes")
-    if json_string == None:
+    if json_string is None:
         return init_val
-    
+
     # 文字列をJSON構造に変換する
     boxes = json.loads(json_string)
     return boxes
-#
-# HISTORY
-# [1] 2024-11-14 - Initial version
-#
+
 
 #
 # [FUNCTION] redisImageGet()
@@ -86,7 +81,7 @@ def redisBoxGet(key):
 # [INPUTS]
 #  key - REDISに格納されたキー
 #
-# [OUTPUTS] 
+# [OUTPUTS]
 #  認識結果画像（JSON形式）：
 #  {'keys': ['outputImage'],
 #   'records': [{'outputImage':<String of image>}],
@@ -94,72 +89,108 @@ def redisBoxGet(key):
 #
 # [NOTES]
 #
-def redisImageGet(key):
+def redisImageGet(key) -> dict:
     results = {}
-    results['message'] = "検出画像はありません"
-    
+    results["message"] = "検出画像はありません"
+
     # REDISから画像を取得する
     image_string = r_client.hget(key, "image")
-    if image_string == None:
+    if image_string is None:
         return results
 
     results = {}
-    results['keys'] = ['outputImage']
-    list = []
-    element = {'outputImage': image_string}
-    list.append(element)
-    results['records'] = list
-    results['message'] = None
+    results["keys"] = ["outputImage"]
+    output_image_list = []
+    element = {"outputImage": image_string}
+    output_image_list.append(element)
+    results["records"] = output_image_list
+    results["message"] = None
 
     return results
-#
-# HISTORY
-# [1] 2024-11-14 - Initial version
-#
 
-#
-# [FUNCTION] redisImagePut()
-#
-# [DESCRIPTION]
-#  検出された画像データと検出結果をREDISに格納する
-#
-# [INPUTS]
-#  key - REDISに格納するときのキー
-#  output_image_file - 出力画像ファイル名
-#  detected_boxes - 物体が検出された領域（JSON形式）：
-#  {'keys': ['objName', 'probability', 'topX', 'topY', 'bottomX', 'bottomY'],
-#   'records': [
-#       {'objName':<Detected Name>, 
-#        'probability':<Percentage>, 
-#        'topX':234, 'topY':140, 'bottmX':249, 'bottomY':156}, 
-#       ...],
-#   'message': <コメント>}
-#
-# [OUTPUTS]
-#  True - REDISへの格納が成功、False - 失敗
-#
-# [NOTES]
-#  REDISへは、ハッシュとしてimageキーとboxesキーを有効期限付きで格納する。
-#
-def redisImagePut(key, output_image_file, detected_boxes):
+def redisImagePut(key, output_image_file, detected_boxes) -> bool:
+    """検出された画像データと検出結果をREDISに格納する
+
+    NOTE: REDISへは、ハッシュとしてimageキーとboxesキーを有効期限付きで格納する
+
+    Args:
+        key (_type_): REDISに格納するときのキー
+        output_image_file (_type_): 出力画像ファイル名
+        detected_boxes (_type_): 物体が検出された領域（JSON形式）
+        {'keys': ['objName', 'probability', 'topX', 'topY', 'bottomX', 'bottomY'],
+            'records': [
+                {'objName':<Detected Name>,
+                'probability':<Percentage>,
+                'topX':234, 'topY':140, 'bottmX':249, 'bottomY':156},
+                ...],
+            'message': <コメント>}
+
+    Returns:
+        _type_: True - REDISへの格納が成功、False - 失敗
+    """
     Status = True
     # Base64文字列に変換する
     with open(output_image_file, "rb") as image_file:
         data = base64.b64encode(image_file.read())
 
-    img_text = "data:image/jpeg;base64," + data.decode('utf-8')
+    img_text = "data:image/jpeg;base64," + data.decode("utf-8")
 
     # REDISにハッシュとして格納
     try:
         r_client.hset(key, "image", img_text)
         r_client.hset(key, "boxes", json.dumps(detected_boxes))
-        r_client.expire(key, redis_duration) # 有効期限を設定する
+        r_client.expire(key, redis_duration)  # 有効期限を設定する
     except Exception as e:
         print(e)
         Status = False
-    
+
     return Status
-#
-# HISTORY
-# [1] 2024-11-14 - Initial version
-#
+
+
+def redis_text_put(key, text) -> bool:
+    """抽出したテキストをREDISに格納する
+
+    Args:
+        key (_type_): REDISに格納するときのキー
+        text (_type_): 抽出したテキスト
+
+    Returns:
+        bool: True - REDISへの格納が成功、False - 失敗
+    """
+    Status = True
+    # REDISにテキストを格納
+    try:
+        r_client.hset(key, "text", text)
+        r_client.expire(key, redis_duration)  # 有効期限を設定する
+    except Exception as e:
+        print(e)
+        Status = False
+
+    return Status
+
+
+def redis_text_get(key) -> dict:
+    """抽出したテキストを取得する
+
+    Args:
+        key (_type_): REDISに格納されたキー
+
+    Returns:
+        str: 抽出したテキスト
+    """
+    # REDISからテキストを取得する
+    text = r_client.hget(key, "text")
+    if text is None:
+        return {"outputText": "テキストはありません"}
+
+    # この形式がeyachoのAPIのレスポンスとなる
+    # keysには，eYaChoで定義したタグのプロパティ名（自分が出力箇所にリンクさせたタグ）を入れる
+    # recordsには，先ほどのkeysとその出力箇所に入れたい値をdict形式で入れる
+    result = {}
+    result["keys"] = ["outputText"]
+    result["records"] = [{"outputText": text.decode("utf-8")}]
+    result["message"] = None
+
+    # print("Extracted Text:", text)
+
+    return result
