@@ -1,0 +1,8 @@
+transformers
+google-cloud-vision
+pdfplumber
+google-cloud-storage
+
+アイデア
+ポートレイトから動画　https://tt-tsukumochi.com/archives/11646
+yolov9 https://tt-tsukumochi.com/archives/10842
