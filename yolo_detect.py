@@ -1,65 +1,50 @@
 #!/usr/bin/env python
-# coding: utf-8
 #
 # [FILE] yolo_detect.py
 #
 # [DESCRIPTION]
 #   ImageAIを用いた物体検出に関わるメソッドを定義する
-#
+# 0
 from imageai.Detection import ObjectDetection
 
-#
-# [FUNCTION] yoloDetectObjects()
-#
-# [DESCRIPTION]
-#  YOLOモデルを用いて物体を検出する
-#
-# [INPUTS]
-#  inputImageFile - 入力画像ファイル名
-#  outputImageFile - 出力画像ファイル名
-#  modelFile - YOLOモデルファイル名
-#
-# [OUTPUTS]
-#  {'keys': ['objName', 'probability', 'topX', 'topY', 'bottomX', 'bottomY'],
-#   'records': [
-#       {'objName':<Detected Name>, 
-#        'probability':<Percentage>, 
-#        'topX':234, 'topY':140, 'bottmX':249, 'bottomY':156}, 
-#       ...],
-#   'message': <コメント>}
-#
-# [NOTES]
-#
-def yoloDetectObjects(inputImageFile, outputImageFile, modelFile):
+
+def yolo_detect_objects(source_image_path, output_image_path, model_file):
+    """物体検出を行う
+
+    Args:
+        inputImageFile (_type_): 入力画像ファイルpath
+        outputImageFile (_type_): 出力画像ファイルpath
+        modelFile (_type_): YOLOモデルファイル
+
+    Returns:
+        _type_: 物体が検出された領域（JSON形式）
+
+    NOTE: output_image_pathには検出結果を描画した画像が保存されるが，detectionsには検出結果（JSON）が格納される
+    """
     detector = ObjectDetection()
     detector.setModelTypeAsYOLOv3()
-    detector.setModelPath(modelFile)
+    detector.setModelPath(model_file)
     detector.loadModel()
 
-    detections = detector.detectObjectsFromImage(input_image=inputImageFile, output_image_path=outputImageFile)
+    detections = detector.detectObjectsFromImage(input_image=source_image_path, output_image_path=output_image_path)
 
     results = {}
-    results['keys'] = ['objName', 'probability', 'topX', 'topY', 'bottomX', 'bottomY']
-    list = []
-    
-    # 検出した対象物、認識精度、位置を抽出してJSONを構成する
-    for eachObject in detections:
-        name = eachObject["name"]
-        prob = eachObject["percentage_probability"]
-        box  = eachObject["box_points"]
-        elements = {'objName': name, 'probability': prob, 'topX': box[0], 'topY': box[1], 'bottomX': box[2], 'bottomY': box[3]}
-        print("Detected:", elements)
-        list.append(elements)
+    results["keys"] = ["objName", "probability", "topX", "topY", "bottomX", "bottomY"]
+    detected_objects = []
 
-    results['records'] = list
+    # 検出した対象物、認識精度、位置を抽出してJSONを構成する
+    for each_object in detections:
+        name = each_object["name"]
+        prob = each_object["percentage_probability"]
+        box = each_object["box_points"]
+        elements = {"objName": name, "probability": prob, "topX": box[0], "topY": box[1], "bottomX": box[2], "bottomY": box[3]}
+        print("Detected:", elements)
+        detected_objects.append(elements)
+
+    results["records"] = detected_objects # 検出結果のリスト
     msg = "検出できません"
-    if len(list) > 0:
+    if len(detected_objects) > 0:
         msg = "送信終了"
-    results['message'] = msg
+    results["message"] = msg
 
     return results
-
-#
-# HISTORY
-# [1] 2024-11-14 - Initial version
-#
