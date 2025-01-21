@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOLO Object Detection</title>
+</head>
+
+<body>
+    <h1>YOLO Object Detection</h1>
+    <!-- formにaction'(送信先URL)とmethod(GET, POST )が指定されると，それに基づいてリクエストが発生-->
+    <form action="/detect" method="post" enctype="multipart/form-data">
+        <label for="file">Select an image:</label>
+        <input type="file" id="file" name="file" accept="image/*" required>
+        <!-- type=submitがついていると親のformに基づいてリクエストが送信される -->
+        <button type="submit">Upload and Detect</button>
+    </form>
+</body>
+
+</html>

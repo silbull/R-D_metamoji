@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOLO Detection Results</title>
+    <style>
+        /* 画像の幅をウィンドウサイズに合わせて自動調整し、アスペクト比を維持する */
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>YOLO Object Detection Results</h1>
+    <h2>Detected Objects:</h2>
+    <ul>
+        {% for obj in detected_objects %}
+        <li>{{ obj.objName }}: {{ obj.probability }}%</li>
+        {% endfor %}
+    </ul>
+    <h2>Annotated Image:</h2>
+    <img src="{{ annotated_image }}" alt="Annotated Image">
+</body>
+
+</html>
