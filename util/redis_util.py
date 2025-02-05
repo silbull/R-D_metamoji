@@ -44,6 +44,7 @@ print("Connected REDIS")
 # 表データ系のREDIS処理
 # ==================================================================================================
 
+
 def redis_table_put(key, table) -> bool:
     """テーブルデータをREDISに格納する
 
@@ -84,11 +85,13 @@ def redis_table_get(key) -> dict:
     table["message"] = "表を読み込みました"
     return table
 
+
 # ==================================================================================================
 # 物体検出系のREDIS処理
 # ==================================================================================================
 
-def redisImageGet(key) -> dict:
+
+def redis_iamge_get(key) -> dict:
     """物体を検出した画像データを取得する
 
     Args:
@@ -119,7 +122,7 @@ def redisImageGet(key) -> dict:
     return results
 
 
-def redisBoxGet(key):
+def redis_box_get(key):
     """物体検出結果を取得する
 
      Args:
@@ -150,7 +153,7 @@ def redisBoxGet(key):
     return boxes
 
 
-def redisImagePut(key, output_image_file, detected_boxes) -> bool:
+def redis_image_put(key, output_image_file, detected_boxes) -> bool:
     """検出された画像データと検出結果をREDISに格納する
 
     NOTE: REDISへは、ハッシュとしてimageキーとboxesキーを有効期限付きで格納する
@@ -188,9 +191,11 @@ def redisImagePut(key, output_image_file, detected_boxes) -> bool:
 
     return Status
 
+
 # ==================================================================================================
 # テキスト抽出系のREDIS処理
 # ==================================================================================================
+
 
 def redis_text_put(key, text) -> bool:
     """抽出したテキストをREDISに格納する
