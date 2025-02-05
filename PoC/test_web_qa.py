@@ -1,7 +1,8 @@
+from typing import Annotated
+
 from fastapi import FastAPI, Form
 from fastapi.responses import HTMLResponse
 from transformers import pipeline
-from typing import Annotated
 
 app = FastAPI()
 
@@ -29,6 +30,8 @@ async def index():
         </body>
     </html>
     """
+
+
 # name="context"とname="question"の値をpostで送信することができる．
 
 
