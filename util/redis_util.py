@@ -221,7 +221,7 @@ def redis_text_get(key) -> dict:
         key (_type_): REDISに格納されたキー
 
     Returns:
-        str: 抽出したテキスト
+        dict: 抽出したテキストを含むJSON形式
     """
     # REDISからテキストを取得する
     text = r_client.hget(key, "text")
