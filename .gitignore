@@ -171,9 +171,14 @@ _temp/*
 !.gitkeep
 
 # Model file folder
-model/*
+# model/*
+api/model/*
 !.gitkeep
 
 uploads/
 miyawaki_paper_MIRU2024.pdf
 wakeupcat.jpg
+NotoSansJP-Regular.ttf
+
+runs/
+PDFs/
