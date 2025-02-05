@@ -5,6 +5,9 @@
 # [DESCRIPTION]
 #  ユーティリティ関数を定義する
 #
+import sys
+
+
 def getNoteId(notelink):
     """eYACHO/GEMBA NoteのノートリンクからノートIDを抽出する
 
@@ -27,3 +30,15 @@ def getNoteId(notelink):
         return ""
 
     return splitString[0]
+
+
+def is_reload_enabled():
+    """実行するコマンドに--reloadが含まれるか判定する
+
+    Note:
+        Trueの場合はデバッグ実行とみなし、JSONデータをコンソール上に表示する
+
+    Returns:
+        bool: True: 含まれる False: 含まれない
+    """
+    return "--reload" in sys.argv
