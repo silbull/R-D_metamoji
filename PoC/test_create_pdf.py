@@ -7,7 +7,7 @@ from reportlab.platypus import Image
 
 from util.text_table_util import async_detect_document, extract_table
 
-pdfmetrics.registerFont(TTFont("NotoSansJP", "NotoSansJP-Regular.ttf"))
+pdfmetrics.registerFont(TTFont("NotoSansJP", "PoC/NotoSansJP-Regular.ttf"))
 
 
 def create_pdf(output_path, user_text, image_path):
@@ -81,7 +81,9 @@ def table_ex():
 
 
 if __name__ == "__main__":
-    # create_pdf("outputs/custom_output.pdf", user_text="ReportLabによる文字配置サンプルです。", image_path="wakeupcat.jpg")
+    create_pdf(
+        "PoC/outputs/custom_output.pdf", user_text="ReportLabによる文字配置サンプルです。", image_path="PoC/outputs/zidane.jpg"
+    )
     # yolov8()
-    table_ex()
+    # table_ex()
     # async_detect_document("gs://cloud-samples-data/vision/pdf_tiff/census2010.pdf", "gs://cloud-samples-data/vision/pdf_tiff/census2010.json")
