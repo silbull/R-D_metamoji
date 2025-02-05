@@ -11,7 +11,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from yolo_detect import yolo_detect_objects  # YOLOの物体検出関数をインポート
+from util.yolo_util import yolo_detect_objects  # YOLOの物体検出関数をインポート
 
 # .envファイルの内容を読み込見込む
 load_dotenv()

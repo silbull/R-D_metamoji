@@ -60,7 +60,7 @@ def yolov8():
     for result in results:
         # print(f"{result=}")
         print(result.verbose())
-        print(result.save("test2.jpg", boxes=False, labels=False))
+        print(result.save("outputs/test2.jpg", boxes=False, labels=False))
         # result.show()
     # print(f"{results[0]=}")
     # results[0].show()
@@ -81,7 +81,7 @@ def table_ex():
 
 
 if __name__ == "__main__":
-    # create_pdf("custom_output.pdf", user_text="ReportLabによる文字配置サンプルです。", image_path="wakeupcat.jpg")
+    # create_pdf("outputs/custom_output.pdf", user_text="ReportLabによる文字配置サンプルです。", image_path="wakeupcat.jpg")
     # yolov8()
     table_ex()
     # async_detect_document("gs://cloud-samples-data/vision/pdf_tiff/census2010.pdf", "gs://cloud-samples-data/vision/pdf_tiff/census2010.json")
