@@ -2,7 +2,13 @@ transformers
 google-cloud-vision
 pdfplumber
 google-cloud-storage
+reportlab
+# pip install -U ultralyticsplus==0.0.14
+pip install -U ultralyticsplus
 
 アイデア
 ポートレイトから動画　https://tt-tsukumochi.com/archives/11646
 yolov9 https://tt-tsukumochi.com/archives/10842
+yolov8の可視化　https://www.hinomaruc.com/displaying-results-of-object-detection-with-yolov8/
+mobilesam https://docs.ultralytics.com/models/mobile-sam/#testing-mobilesam-in-ultralytics
+GCP使ったやつ　https://astro-notion-blog-phr.pages.dev/posts/2023_08_cloud-ai-ocr/

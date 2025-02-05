@@ -184,3 +184,5 @@ runs/
 PDFs/
 
 PoC/outputs/
+.DS_Store
+dump.rdb
