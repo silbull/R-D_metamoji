@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import api.routers.routers as routers
-from util.redis_util import redis_box_get, redis_iamge_get, redis_image_put, redis_text_get, redis_text_put
+from util.redis_util import redis_box_get, redis_image_get, redis_image_put, redis_text_get, redis_text_put
 from util.text_table_util import run_ocr
 from util.util import getNoteId
 from util.yolo_util import yolo_detect_objects
@@ -61,5 +61,3 @@ async def top_page(request: Request):
     """
 
     return templates.TemplateResponse("top.html", {"request": request, "title": "YOLO REST Server"})
-
-
