@@ -7,7 +7,7 @@ import aiofiles
 from dotenv import load_dotenv
 from ultralytics import SAM, YOLO
 
-from util.redis_util import redis_box_get, redis_iamge_get, redis_image_put
+from util.redis_util import redis_box_get, redis_image_get, redis_image_put
 from util.util import getNoteId, is_reload_enabled
 from util.yolo_util import yolo_detect_objects
 
@@ -131,7 +131,7 @@ def get_detected_image(json_data: dict):
     # 格納するキーはeYACHO/GEMBA NoteのノートIDとページIDから生成する
     noteId = getNoteId(json_data["_NOTE_LINK"])
     key = noteId + "-" + json_data["_PAGE_ID"]
-    results = redis_iamge_get(key)  # 画像データを取得する
+    results = redis_image_get(key)  # 画像データを取得する
 
     print("[REDIS IMAGE]", results)
     print(type(results))
@@ -218,7 +218,7 @@ def get_segmented_image(json_data: dict):
     # 格納するキーはeYACHO/GEMBA NoteのノートIDとページIDから生成する
     noteId = getNoteId(json_data["_NOTE_LINK"])
     key = noteId + "-" + json_data["_PAGE_ID"]
-    results = redis_iamge_get(key)  # 画像データを取得する
+    results = redis_image_get(key)  # 画像データを取得する
 
     if is_reload_enabled():
         print("[REDIS IMAGE]", results)

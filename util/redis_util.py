@@ -91,7 +91,7 @@ def redis_table_get(key) -> dict:
 # ==================================================================================================
 
 
-def redis_iamge_get(key) -> dict:
+def redis_image_get(key) -> dict:
     """物体を検出した画像データを取得する
 
     Args:
